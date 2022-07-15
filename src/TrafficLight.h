@@ -25,8 +25,13 @@ template <class T>
 class MessageQueue
 {
 public:
+    T receive();
+    void send(T &&msg);
 
 private:
+    std::deque _queue;
+    std::condition_variable _cond;
+    std::mutex _mutex;
     
 };
 
