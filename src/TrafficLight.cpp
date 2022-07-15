@@ -2,6 +2,9 @@
 #include <random>
 #include "TrafficLight.h"
 
+#include <thread>
+#include <future>
+
 /* Implementation of class "MessageQueue" */
 
 /* 
@@ -44,6 +47,7 @@ TrafficLightPhase TrafficLight::getCurrentPhase()
 void TrafficLight::simulate()
 {
     // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called. To do this, use the thread queue in the base class. 
+    threads.emplace_back(std::thread(cycleThroughPhases));
 }
 
 // virtual function which is executed in a thread
@@ -52,6 +56,37 @@ void TrafficLight::cycleThroughPhases()
     // FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles 
     // and toggles the current phase of the traffic light between red and green and sends an update method 
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
-    // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
+    // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles.
+
+    // Get random time between 4.0 and 6.0 seconds    
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> dist(4.0,6.0);
+    double random_duration = dist(gen);
+
+    // Set first time point
+    std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
+    
+    while(true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+        std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+        auto time_passed = std::chrono::duration_cast<std::chrono::seconds>( t2 - t1 ).count();
+
+        if (time_passed >= random_duration){ // Between 4 and 6 seconds have passed
+
+            //Toggle light
+            (_currentPhase == TrafficLightPhase::red) ? _currentPhase = TrafficLightPhase::green : _currentPhase = TrafficLightPhase::red;
+            
+
+            //Reset the reference time point
+            std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+
+            // ToDo: Send an update method to the message queue
+        }
+        
+    }
+
 }
 
