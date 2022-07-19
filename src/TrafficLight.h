@@ -46,6 +46,7 @@ class TrafficLight : public TrafficObject
 public:
     // constructor / desctructor
     TrafficLight();
+    ~TrafficLight();
     // getters / setters
 
     // typical behaviour methods
@@ -65,8 +66,6 @@ private:
 
     TrafficLightPhase _currentPhase;
 
-    std::condition_variable _condition;
-    std::mutex _mutex;
 };
 
 #endif

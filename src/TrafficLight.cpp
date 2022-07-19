@@ -31,7 +31,7 @@ void MessageQueue<T>::send(T &&msg)
     std::lock_guard<std::mutex> lck(_mutex);
     _queue.clear();
 
-    _queue.push_back(std::move(msg));
+    _queue.emplace_back(std::move(msg));
     _cond.notify_one();
 }
 
@@ -43,6 +43,8 @@ TrafficLight::TrafficLight()
 {
     _currentPhase = TrafficLightPhase::red; //default red light
 }
+
+TrafficLight::~TrafficLight(){}
 
 void TrafficLight::waitForGreen()
 {
