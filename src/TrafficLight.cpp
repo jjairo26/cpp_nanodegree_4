@@ -29,6 +29,8 @@ void MessageQueue<T>::send(T &&msg)
     // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
 
     std::lock_guard<std::mutex> lck(_mutex);
+    _queue.clear();
+
     _queue.push_back(std::move(msg));
     _cond.notify_one();
 }
@@ -75,11 +77,11 @@ void TrafficLight::cycleThroughPhases()
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles.
 
-    // Get random time between 4.0 and 6.0 seconds    
-    std::default_random_engine gen;
+    // Get random time between 4.0 and 6.0 seconds
+    unsigned int seed = std::chrono::steady_clock::now().time_since_epoch().count();    
+    std::default_random_engine gen(seed);
     std::uniform_real_distribution<double> dist(4.0,6.0);
     double random_duration = dist(gen);
-
     // Set first time point
     std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 
@@ -96,7 +98,6 @@ void TrafficLight::cycleThroughPhases()
             //Toggle light
             (_currentPhase == TrafficLightPhase::red) ? _currentPhase = TrafficLightPhase::green : _currentPhase = TrafficLightPhase::red;
             
-
             //Reset the reference time point
             t1 = std::chrono::high_resolution_clock::now();
 
