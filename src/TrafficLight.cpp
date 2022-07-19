@@ -98,9 +98,10 @@ void TrafficLight::cycleThroughPhases()
             
 
             //Reset the reference time point
-            std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+            t1 = std::chrono::high_resolution_clock::now();
 
-            // ToDo: Send an update method to the message queue
+            // Send an update method to the message queue
+            _queue.send(std::move(_currentPhase));
         }
         
     }
